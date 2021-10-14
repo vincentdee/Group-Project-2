@@ -21,6 +21,9 @@ knitr::opts_chunk$set(echo = TRUE)
 turnover <- read.csv("turnover.csv", stringsAsFactors = TRUE)
 summary(turnover)
 str(turnover)
+
+##As seen in the structure, all data types are correct and thus no additional work is required.
+
 summary(turnover)
 
 ##As seen in the summary, our data does not report any missing values, and hence we are done performing an initial clean of our dataset before use.
