@@ -1,6 +1,6 @@
 ---
 title: "Deliverable#1"
-author: "Vinny Dee"
+author: "Vinny Dee, Zoe Tuan, Yuchen Mao, Tracy Chen, Jake Li"
 date: "10/14/2021"
 output: html_document
 ---
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##Our dataset is a real dataset shared from Edward Babushkin's blog and contains data concerning employee turnover, the length of time the employees have worked for their companies, as well as gender, age, industry, profession, and scores for employeep ersonality traits such as extraversion, anxiety, self-control, or independence. 
 
-##Our business question is: What factors are most important in determining employee turnover at IBM?
+##Our business question is: What factors are most important in determining employee turnover?
 
 
 
