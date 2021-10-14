@@ -1,0 +1,39 @@
+---
+title: "Deliverable#1"
+author: "Vinny Dee"
+date: "10/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Detailing our dataset, business question, and preliminary efforts to clean & explore
+
+##Our dataset details a fictional set of over 1,000 IBM employees and contains data concerning employee turnover, the length of time the employees have worked for IBM, as well as gender, age, industry, profession, and scores for employeep ersonality traits such as extraversion, anxiety, self-control, or independence. 
+
+##Our business question is: What factors are most important in determining employee turnover at IBM?
+
+
+
+```{r}
+ibm <- read.csv("turnover.csv")
+summary(ibm)
+str(ibm)
+
+##First we want to convert the variables into factors in order to be able to manipulate them and use them in our exploration.
+
+ibm$event <- as.factor(ibm$event)
+ibm$gender <- as.factor(ibm$gender)
+ibm$head_gender <- as.factor(ibm$head_gender)
+ibm$coach <- as.factor(ibm$coach)
+ibm$way <- as.factor(ibm$way)
+ibm$greywage <- as.factor(ibm$greywage)
+ibm$profession <- as.factor(ibm$profession)
+ibm$industry <- as.factor(ibm$industry)
+
+summary(ibm)
+
+##As seen in the summary, our data does not report any missing values, and hence we are done performing an initial clean of our dataset before use.
+```
