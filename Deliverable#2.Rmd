@@ -1,0 +1,40 @@
+---
+title: "Deliverable #2"
+author: "Vinny Dee, Zoe Tuan, Yuchen Mao, Tracy Chen, Jake Li"
+date: "10/15/2021"
+output: 
+  html_document: 
+    highlight: tango
+    theme: united
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dataset Overview
+Our dataset is a real dataset shared from Edward Babushkin's blog and contains data concerning employee turnover, the length of time the employees have worked for their companies, as well as gender, age, industry, profession, and scores for employeep ersonality traits such as extraversion, anxiety, self-control, or independence. 
+
+Our dataset has 16 columns and 1129 rows.
+
+## Our business question
+What factors are most important in determining employee turnover?
+
+
+```{r}
+turnover <- read.csv("turnover.csv", stringsAsFactors = TRUE)
+summary(turnover)
+str(turnover)
+
+##As seen in the structure, all data types are correct and thus no additional work is required.
+
+summary(turnover)
+
+##As seen in the summary, our data does not report any missing values, and hence we are done performing an initial clean of our dataset before use.
+```
+
+We can
