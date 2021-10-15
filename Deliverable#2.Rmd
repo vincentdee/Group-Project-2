@@ -37,4 +37,25 @@ summary(turnover)
 ##As seen in the summary, our data does not report any missing values, and hence we are done performing an initial clean of our dataset before use.
 ```
 
-We can
+To determine the contributory factors to employee turnover, we can create a number of models and compare any similarities regarding independent variables. 
+
+A second clean of our dataset is in order.
+```{r}
+#make factors into binary dummy variables and randomize all rows
+turnoverMM = as.data.frame(model.matrix(~.-1,turnover))
+
+set.seed(420)
+turnoverMM = turnoverMM[sample(nrow(turnoverMM)),]
+
+#define a normalizing function
+normalize = function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+#normalize the data
+turnoverNorm <- as.data.frame(lapply(turnoverMM, normalize))
+```
+
+
+The following are a series of baseline models:
+
