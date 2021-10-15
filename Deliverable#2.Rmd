@@ -44,7 +44,7 @@ A second clean of our dataset is in order.
 #make factors into binary dummy variables and randomize all rows
 turnoverMM = as.data.frame(model.matrix(~.-1,turnover))
 
-set.seed(420)
+set.seed(414)
 turnoverMM = turnoverMM[sample(nrow(turnoverMM)),]
 
 #define a normalizing function
@@ -53,9 +53,92 @@ normalize = function(x) {
 }
 
 #normalize the data
-turnoverNorm <- as.data.frame(lapply(turnoverMM, normalize))
+turnoverNorm = as.data.frame(lapply(turnoverMM, normalize))
 ```
 
+We now need to create separate testing and training datasets.
+```{r}
+set.seed(414)
+training_indices = sample(1:nrow(turnoverNorm), 0.7*(nrow(turnoverNorm)))
+
+turnover_train = turnoverNorm[training_indices, ]
+turnover_test = turnoverNorm[-training_indices, ]
+turnover_train_withEvent = turnover_train
+turnover_test_withEvent = turnover_test
+turnover_train$event = NULL
+turnover_test$event = NULL
+
+train_labels = turnoverNorm[training_indices, "event"]
+test_labels = turnoverNorm[-training_indices, "event"]
+```
 
 The following are a series of baseline models:
 
+### Logistic Regression Analysis
+```{r}
+library(class)
+library(caret)
+library(gmodels)
+
+#make the model, remove insignificant elements
+logit_model = glm(event ~ . , data = turnover_train_withEvent, family = binomial)
+summary(logit_model)
+
+#add new column for prediction
+turnover_test_copy = turnover_test
+turnover_test_copy$pred_glm = 0
+turnover_test_copy$pred_glm = predict(logit_model, newdata = turnover_test_copy, type = "response")
+turnover_test_copy$pred_glm = ifelse(turnover_test_copy$pred_glm >= 0.5, 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_glm, prop.chisq = FALSE)
+
+```
+The GLM model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****. 
+
+### K Nearest Neighbors Analysis
+```{r}
+library(class)
+library(caret)
+library(gmodels)
+
+#choose k to be sqrt of the size
+kval = sqrt(nrow(turnover_train))
+
+turnover_test_copy$pred_knn = knn(train = turnover_train, test = turnover_test, cl = train_labels, k = kval)
+
+#convert output from binary factor to numeric
+turnover_test_copy$pred_knn = ifelse(turnover_test_copy$pred_knn == "1", 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_knn, prop.chisq = FALSE)
+```
+The KNN model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****.
+
+### Artificial Neural Network Analysis
+```{r}
+library(neuralnet)
+library(class)
+library(caret)
+library(gmodels)
+
+ANN_model = neuralnet(event ~ ., data = turnover_train_withEvent, stepmax = 1e+05) #set low for now for testing
+ANN_results = compute(ANN_model, turnover_test_withEvent)
+turnover_test_copy$pred_ann = ANN_results$net.result
+turnover_test_copy$pred_ann = ifelse(turnover_test_copy$pred_ann >= 0.5, 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_ann, prop.chisq = FALSE)
+```
+The ANN model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****.
+
+### Weighted Combined Model
+```{r}
+# an arbitrary 40% weight for ANN and 30% weight for the other 2
+turnover_test_copy$pred_sum = (0.4*(turnover_test_copy$pred_ann)) + (0.3*(turnover_test_copy$pred_glm)) + (0.3*(turnover_test_copy$pred_knn))
+turnover_test_copy$pred_overall = ifelse(turnover_test_copy$pred_sum >= 0.5, 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_overall, prop.chisq = FALSE)
+```
+The combined model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****.
