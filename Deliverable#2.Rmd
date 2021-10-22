@@ -1,0 +1,144 @@
+---
+title: "Deliverable #2"
+author: "Vinny Dee, Zoe Tuan, Yuchen Mao, Tracy Chen, Jake Li"
+date: "10/15/2021"
+output: 
+  html_document: 
+    highlight: tango
+    theme: united
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dataset Overview
+Our dataset is a real dataset shared from Edward Babushkin's blog and contains data concerning employee turnover, the length of time the employees have worked for their companies, as well as gender, age, industry, profession, and scores for employeep ersonality traits such as extraversion, anxiety, self-control, or independence. 
+
+Our dataset has 16 columns and 1129 rows.
+
+## Our business question
+What factors are most important in determining employee turnover?
+
+
+```{r}
+turnover <- read.csv("turnover.csv", stringsAsFactors = TRUE)
+summary(turnover)
+str(turnover)
+
+##As seen in the structure, all data types are correct and thus no additional work is required.
+
+summary(turnover)
+
+##As seen in the summary, our data does not report any missing values, and hence we are done performing an initial clean of our dataset before use.
+```
+
+To determine the contributory factors to employee turnover, we can create a number of models and compare any similarities regarding independent variables. 
+
+A second clean of our dataset is in order.
+```{r}
+#make factors into binary dummy variables and randomize all rows
+turnoverMM = as.data.frame(model.matrix(~.-1,turnover))
+
+set.seed(414)
+turnoverMM = turnoverMM[sample(nrow(turnoverMM)),]
+
+#define a normalizing function
+normalize = function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+#normalize the data
+turnoverNorm = as.data.frame(lapply(turnoverMM, normalize))
+```
+
+We now need to create separate testing and training datasets.
+```{r}
+set.seed(414)
+training_indices = sample(1:nrow(turnoverNorm), 0.7*(nrow(turnoverNorm)))
+
+turnover_train = turnoverNorm[training_indices, ]
+turnover_test = turnoverNorm[-training_indices, ]
+turnover_train_withEvent = turnover_train
+turnover_test_withEvent = turnover_test
+turnover_train$event = NULL
+turnover_test$event = NULL
+
+train_labels = turnoverNorm[training_indices, "event"]
+test_labels = turnoverNorm[-training_indices, "event"]
+```
+
+The following are a series of baseline models:
+
+### Logistic Regression Analysis
+```{r}
+library(class)
+library(caret)
+library(gmodels)
+
+#make the model, remove insignificant elements
+logit_model = glm(event ~ . , data = turnover_train_withEvent, family = binomial)
+summary(logit_model)
+
+#add new column for prediction
+turnover_test_copy = turnover_test
+turnover_test_copy$pred_glm = 0
+turnover_test_copy$pred_glm = predict(logit_model, newdata = turnover_test_copy, type = "response")
+turnover_test_copy$pred_glm = ifelse(turnover_test_copy$pred_glm >= 0.5, 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_glm, prop.chisq = FALSE)
+
+```
+The GLM model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****. 
+
+### K Nearest Neighbors Analysis
+```{r}
+library(class)
+library(caret)
+library(gmodels)
+
+#choose k to be sqrt of the size
+kval = sqrt(nrow(turnover_train))
+
+turnover_test_copy$pred_knn = knn(train = turnover_train, test = turnover_test, cl = train_labels, k = kval)
+
+#convert output from binary factor to numeric
+turnover_test_copy$pred_knn = ifelse(turnover_test_copy$pred_knn == "1", 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_knn, prop.chisq = FALSE)
+```
+The KNN model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****.
+
+### Artificial Neural Network Analysis
+```{r}
+library(neuralnet)
+library(class)
+library(caret)
+library(gmodels)
+
+ANN_model = neuralnet(event ~ ., data = turnover_train_withEvent, stepmax = 1e+05) #set low for now for testing
+ANN_results = compute(ANN_model, turnover_test_withEvent)
+turnover_test_copy$pred_ann = ANN_results$net.result
+turnover_test_copy$pred_ann = ifelse(turnover_test_copy$pred_ann >= 0.5, 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_ann, prop.chisq = FALSE)
+```
+The ANN model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****.
+
+### Weighted Combined Model
+```{r}
+# an arbitrary 40% weight for ANN and 30% weight for the other 2
+turnover_test_copy$pred_sum = (0.4*(turnover_test_copy$pred_ann)) + (0.3*(turnover_test_copy$pred_glm)) + (0.3*(turnover_test_copy$pred_knn))
+turnover_test_copy$pred_overall = ifelse(turnover_test_copy$pred_sum >= 0.5, 1, 0)
+
+#evaluate
+CrossTable(x = test_labels, y = turnover_test_copy$pred_overall, prop.chisq = FALSE)
+```
+The combined model predicted ***** individuals would leave, of which ***** actually left. It missed ***** who were predicted to stay but actually left. The sensitivity is ***** and the specificity is *****.
