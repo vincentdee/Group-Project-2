@@ -2,7 +2,14 @@
 title: "Deliverable#1"
 author: "Vinny Dee, Zoe Tuan, Yuchen Mao, Tracy Chen, Jake Li"
 date: "10/14/2021"
-output: html_document
+output: 
+  html_document: 
+    highlight: tango
+    theme: united
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
