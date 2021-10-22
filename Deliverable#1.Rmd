@@ -1,5 +1,5 @@
 ---
-title: "Deliverable#1"
+title: "Deliverable #1"
 author: "Vinny Dee, Zoe Tuan, Yuchen Mao, Tracy Chen, Jake Li"
 date: "10/14/2021"
 output: 
