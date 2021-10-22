@@ -9,10 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##Our dataset is a real dataset shared from Edward Babushkin's blog and contains data concerning employee turnover, the length of time the employees have worked for their companies, as well as gender, age, industry, profession, and scores for employeep ersonality traits such as extraversion, anxiety, self-control, or independence. 
-##Our dataset has 16 columns and 1129 rows.
+##Our business question is: What factors are most important in determining employee turnover? By answering this question, we can help employers gain an insight into which of the fators affect employee turnover and work on those factors to decrease attrition. Our audience are the employers and the important decision that needs to be made is how to improve employee retention, which they can answer from looking at the eventual results of our model. 
 
-##Our business question is: What factors are most important in determining employee turnover?
+##Our dataset comes from  https://www.kaggle.com/davinwijaya/employee-turnover, which is a real dataset shared from Edward Babushkin's blog and contains data concerning employee turnover, the length of time the employees have worked for their companies, as well as gender, age, industry, profession, and scores for employee personality traits such as extraversion, anxiety, self-control, or independence. The dataset contains 16 columns and 1129 rows, and we've taken turnover as the response value, while the other columns are treated as predictors. 
+
+##So far, we have not run into any data cleaning issues. The size of the dataset is manageable, and we have not found any missing or NA values.
+
+##Employee attrition is an important aspect for all businesses, and finding out which factors attribute most to whether or not an employee is likely to stay with the company is useful for employers everywhere. By having this model and being able to predict which employee's have a high chance of turnover, employers can divert resources to prevent that employee from leaving. It's advantageous to the company, both in conserving time and cost, in recruiting and training new employees if it's possible to maintain the current employee base.  
 
 
 ```{r}
