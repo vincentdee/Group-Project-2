@@ -151,3 +151,8 @@ turnover_test_copy$pred_overall = ifelse(turnover_test_copy$pred_sum >= 0.5, 1, 
 CrossTable(x = test_labels, y = turnover_test_copy$pred_overall, prop.chisq = FALSE)
 ```
 The combined model predicted 124 individuals would leave, of which 88 actually left. It missed 86 who were predicted to stay but actually left. The sensitivity is 60% and the specificity is 71%.
+
+
+### Based on models above, are you on track to acheiving your objectives. Are the models helpful on your decision making? How do you need to improve the models?
+
+Of the three models we ran, GLM is currently the highest. This may be due to the ANN being limited in layers (we did this so it would knit faster temporarily), and the KNN not having an optimal k value. GOing forward, we want to find the optimal k-value for KNN and identify the relevant significant variables for GLM. Finally, we will increase the depth of the ANN model so that it returns more accurate results.
