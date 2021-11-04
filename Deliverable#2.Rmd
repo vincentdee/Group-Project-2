@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-turnover <- read.csv("turnover.csv", stringsAsFactors = TRUE)
+turnover <- read.csv("turnover.csv", stringsAsFactors = TRUE, fileEncoding="latin1")
 summary(turnover)
 str(turnover)
 
