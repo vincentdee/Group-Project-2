@@ -34,6 +34,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 turnover <- read.csv("turnover.csv", stringsAsFactors = TRUE, fileEncoding = "latin1")
+
+summary(turnover)
+
 str(turnover)
 
 ##As seen in the structure, all data types are correct and thus no additional work is required.
@@ -100,7 +103,7 @@ turnover_test_copy$pred_glm = ifelse(turnover_test_copy$pred_glm >= 0.5, 1, 0)
 CrossTable(x = test_labels, y = turnover_test_copy$pred_glm, prop.chisq = FALSE)
 
 ```
-The GLM model predicted 167 individuals would leave, of which 112 actually left. It missed 62 who were predicted to stay but actually left. The sensitivity is 63.95% and the specificity is 67.1%. 
+The GLM model predicted 167 individuals would leave, of which 112 actually left. It missed 62 who were predicted to stay but actually left. The sensitivity is 64.0% and the specificity is 67.1%. 
 
 ### K Nearest Neighbors Analysis
 ```{r}
