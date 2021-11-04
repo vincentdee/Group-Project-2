@@ -54,6 +54,7 @@ normalize = function(x) {
 
 #normalize the data
 turnoverNorm = as.data.frame(lapply(turnoverMM, normalize))
+turnoverNorm
 ```
 
 We now need to create separate testing and training datasets.
