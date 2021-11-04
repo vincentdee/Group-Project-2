@@ -52,6 +52,7 @@ A second clean of our dataset is in order.
 #make factors into binary dummy variables and randomize all rows
 turnoverMM = as.data.frame(model.matrix(~.-1,turnover))
 
+#shuffle rows
 set.seed(414)
 turnoverMM = turnoverMM[sample(nrow(turnoverMM)),]
 
