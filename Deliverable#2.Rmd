@@ -92,6 +92,7 @@ library(gmodels)
 
 #make the model, remove insignificant elements
 logit_model = glm(event ~ . , data = turnover_train_withEvent, family = binomial)
+logit_model = step(logit_model, direction = "backward")
 summary(logit_model)
 
 #add new column for prediction
@@ -102,13 +103,17 @@ turnover_test_copy$pred_glm = ifelse(turnover_test_copy$pred_glm >= 0.5, 1, 0)
 
 #evaluate
 CrossTable(x = test_labels, y = turnover_test_copy$pred_glm, prop.chisq = FALSE)
-
+confusionMatrix(as.factor(test_labels), as.factor(turnover_test_copy$pred_glm), positive = "1")
 ```
+<<<<<<< HEAD
 <<<<<<< HEAD
 The GLM model predicted 167 individuals would leave, of which 112 actually left. It missed 62 who were predicted to stay but actually left. The sensitivity is 64.0% and the specificity is 67.1%. 
 =======
 The GLM model predicted 167 individuals would leave, of which 112 actually left. It missed 62 who were predicted to stay but actually left. The sensitivity is 64% and the specificity is 67.1%. 
 >>>>>>> ffb03dc1c72f0818a44f6fbfe8cbfcfa0ca8633b
+=======
+The GLM model predicted 176 individuals would leave, of which 112 actually left. It missed 62 who were predicted to stay but actually left. The sensitivity is 64% and the specificity is 67.1%. 
+>>>>>>> 3d454291afaab9ff002e31c8025adb86be4ed1cd
 
 ### K Nearest Neighbors Analysis
 ```{r}
