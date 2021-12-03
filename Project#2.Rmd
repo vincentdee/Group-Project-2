@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Background
 
 
-#### Our business questions are: 1. What factors are most important in determining employee turnover? and 2. Who leaves based on our predictions? By answering these questions, we can help employers gain an insight into which of the fators affect employee turnover and work on those factors to decrease attrition. Our audience are the employers and the important decision that needs to be made is how to improve employee retention, which they can answer from looking at the eventual results of our model. 
+#### Our business questions are: 1. What factors are most important in determining employee turnover? and 2. What is the best model for predicting turnover? By answering these questions, we can help employers gain an insight into which of the fators affect employee turnover and work on those factors to decrease attrition. Our audience are the employers and the important decision that needs to be made is how to improve employee retention, which they can answer from looking at the eventual results of our model. 
 
 
 #### Our dataset comes from  https://www.kaggle.com/davinwijaya/employee-turnover, which is a real dataset shared from Edward Babushkin's blog and contains data concerning employee turnover, the length of time the employees have worked for their companies, as well as gender, age, industry, profession, and scores for employee personality traits such as extraversion, anxiety, self-control, or independence. The dataset contains 16 columns and 1129 rows, and we've taken turnover as the response value, while the other columns are treated as predictors. 
@@ -69,7 +69,7 @@ turnoverNorm = as.data.frame(lapply(turnoverMM, normalize))
 ```{r}
 turnoverNorm_no_event <- turnoverNorm
 turnoverNorm_no_event$event <- NULL
-labels = turnoverNorm$event
+labels <- turnoverNorm$event
 ```
 
 The following are a series of baseline models:
@@ -93,26 +93,25 @@ pred_glm = ifelse(prob_glm >= 0.5, 1, 0)
 CrossTable(x = labels, y = pred_glm, prop.chisq = FALSE)
 confusionMatrix(as.factor(labels), as.factor(pred_glm), positive = "1")
 ```
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 The GLM model predicted 562 individuals would leave, of which 370 actually left. It missed 192 who were predicted to stay but actually left. The sensitivity is 65.84% and the specificity is 64.55%. For the model overall, the accuracy was 65.19%.
 
 After running our logistic regression model using the step function to determine statistically significant predictors, we ended up keeping the following variables:
 - Stag (Experience measured in time)
+- Age
 - Industry
 - Profession
 - Traffic (How the employee got recruited into the company)
 - Coach (How much training the employee received)
-- Way (How employees travel to work: By foot, bus or car) 
+- Way (How employees travel to work: By foot, bus or car)
 - Independent (Amount of task independence)
 
-Some of the factors that the model eliminated were surprising because we expected factors, such as age, gender, and wage to be significant. Logically, older people, mothers, and workers making low wages have more reason to leave the company or workforce in general but that was not reflected in this model. 
+Some of the factors that the model eliminated were surprising because we expected gender (insignificant in the final model) and wage to be significant. Logically, mothers and workers earning low wages have more reason to leave the company or workforce in general but that was not reflected in this model.
 
 One factor that the model kept that was surprising was traffic because we didn't expect the method at which the employee joined the company to be significant. This might be because people who were recruited with referrals might be more inclined to stay if they knew people already at the company and have a better support network in the organization.
 
-The confusion matrix shows that the model only had an accuracy of 65.19%, with high sensitivity of 65.84% and specificity of 64.55%. To answer our business question of which factors affect attrition, this model was not very useful because it has a high quantity of false negatives, misidentifying many employees left as those who were not at risk of leaving the company.
+The confusion matrix shows that the model was only had an accuracy of 65%, with high sensitivity of 66% and specificity of 65%. To answer our business question of which factor affects attrition, this model was not very useful because it has a high quantity of false negatives, misidentifying many employees left as those who were not at risk of leaving the company.
 =======
-
 
 ### Decision Tree
 
@@ -131,7 +130,10 @@ summary(dt)
 
 The decision tree model predicted 568 individuals would leave, of which 516 actually left. It missed 52 who were predicted to stay but actually left. The sensitivity is 90.85% and the specificity is 90.20%. For the model overall, the accuracy was very high, an accuracy of 90.52%, likely a result due to overfitting of our model. 
 
-According to the summary of our decision tree, we found that the industryIT factor seems to be the most important factor in determining employee turnover, followed by industryBuilding, trafficreferal, trafficfriends, and wayfoot. The least important factor was trafficempjs. 
+According to the summary of our decision tree, we found that the industryIT factor seems to be the most important factor in determining employee turnover, followed by industryBuilding, trafficreferal, trafficfriends, and wayfoot. The least important factors were trafficempjs, industryMining, and trafficrabrecNErab. It was pretty interesting for us to see that different types of industries and traffic methods dominate the most and least important factors in predicting turnovers. Meanwhile, individual traits such as age, gender, and personality appear to play as less important roles in affecting turnovers according to our model. 
+
+Combining the results from GLM and decision tree, the two dominating factor that stand out in predicting turnovers are industry and traffic. This conclusion is quite intriguing because it does not align with our intuition of turnovers being determined by more individualistic factors such as personality or happiness. Also, businesses cannot really change what industry they are in, and have limited control in how employees get to work (traffic). According to these analyses, we raised another question in our mind: Are turnovers less controllable and preventable than we might have assumed? 
+=======
 
 ### K Nearest Neighbors Analysis
 ```{r}
@@ -153,6 +155,7 @@ confusionMatrix(as.factor(labels), as.factor(pred_knn), positive = "1")
 ```
 
 The KNN model predicted 514 individuals would leave, of which 340 actually left. It missed 174 who were predicted to stay but actually left. The sensitivity is 66.15% and the specificity is 62.44%. Overall, our KNN model reported 64.13% accuracy.
+=======
 
 ### Artificial Neural Network Analysis
 ```{r}
@@ -174,6 +177,7 @@ confusionMatrix(as.factor(labels), as.factor(pred_ann), positive = "1")
 ```
 
 The ANN model predicted 693 individuals would leave, of which 486 actually left. It missed 207 who were predicted to stay but actually left. The sensitivity is 70.13% and the specificity is 80.50%. Overall, our ANN model was 74.14% accurate.
+=======
 
 ### SVM Analysis
 
@@ -187,7 +191,7 @@ confusionMatrix(as.factor(labels), as.factor(pred_SVM), positive = "1")
 ```
 
 Our SVM model predicted 529 individuals would leave, of which 362 actually left. It missed 167 who were predicted to stay but actually left. The sensitivity is 68.43% and the specificity is 65.17%. Overall, our SVM model was 66.7% accurate.
-
+=======
 
 ### Stacked Model
 
@@ -225,4 +229,4 @@ According to the summary, the stacked model only used the decision tree model, m
 
 ### Based on models above, are you on track to acheiving your objectives. Are the models helpful on your decision making? How do you need to improve the models?
 
-Of the three models we ran, GLM is currently the highest. This may be due to the ANN being limited in layers (we did this so it would knit faster temporarily), and the KNN not having an optimal k value. GOing forward, we want to find the optimal k-value for KNN and identify the relevant significant variables for GLM. Finally, we will increase the depth of the ANN model so that it returns more accurate results.
+To conclude, we were able to achieve our goals of (1) identifying contributory factors in employee turnover, and (2) determining the most accurate models. The most important factors are industry and traffic, and the most useful model is decision tree (or stacked model which was solely based off decision tree). From our results, IT, building, and banking industries have the highest effect on turnovers. There is a lowest possibility of turnover in IT industry, and highest possibilities in building and banking. For future decision making, industries that are in industries of high turnovers might find it helpful to compare themselves with industries with low turnovers and further analyze the differences. An overall improvement in the industry might be more useful than navigating through individualistic factors in terms of preventing turnovers.
