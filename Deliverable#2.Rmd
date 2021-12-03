@@ -66,20 +66,10 @@ normalize = function(x) {
 turnoverNorm = as.data.frame(lapply(turnoverMM, normalize))
 ```
 
-We now need to create separate testing and training datasets.
 ```{r}
-set.seed(414)
-training_indices = sample(1:nrow(turnoverNorm), 0.7*(nrow(turnoverNorm)))
-
-turnover_train = turnoverNorm[training_indices, ]
-turnover_test = turnoverNorm[-training_indices, ]
-turnover_train_withEvent = turnover_train
-turnover_test_withEvent = turnover_test
-turnover_train$event = NULL
-turnover_test$event = NULL
-
-train_labels = turnoverNorm[training_indices, "event"]
-test_labels = turnoverNorm[-training_indices, "event"]
+turnoverNorm_no_event <- turnoverNorm
+turnoverNorm_no_event$event <- NULL
+labels = turnoverNorm$event
 ```
 
 The following are a series of baseline models:
@@ -91,19 +81,17 @@ library(caret)
 library(gmodels)
 
 #make the model, remove insignificant elements
-logit_model = glm(event ~ . , data = turnover_train_withEvent, family = binomial)
+logit_model = glm(event ~ . , data = turnoverNorm, family = binomial)
 logit_model = step(logit_model, direction = "backward")
 summary(logit_model)
 
-#add new column for prediction
-turnover_test_copy = turnover_test
-turnover_test_copy$pred_glm = 0
-turnover_test_copy$pred_glm = predict(logit_model, newdata = turnover_test_copy, type = "response")
-turnover_test_copy$pred_glm = ifelse(turnover_test_copy$pred_glm >= 0.5, 1, 0)
+#create new vector for prediction
+prob_glm = predict(logit_model, newdata = turnoverNorm, type = "response")
+pred_glm = ifelse(prob_glm >= 0.5, 1, 0)
 
 #evaluate
-CrossTable(x = test_labels, y = turnover_test_copy$pred_glm, prop.chisq = FALSE)
-confusionMatrix(as.factor(test_labels), as.factor(turnover_test_copy$pred_glm), positive = "1")
+CrossTable(x = labels, y = pred_glm, prop.chisq = FALSE)
+confusionMatrix(as.factor(labels), as.factor(pred_glm), positive = "1")
 ```
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -130,12 +118,12 @@ The confusion matrix shows that the model was only had an accuracy of 62%, with 
 
 ```{r}
 library(C50)
-turnover_train_withEvent$event <- as.factor(turnover_train_withEvent$event)
-dt <- C5.0(event ~., data = turnover_train_withEvent)
-turnover_test_copy$pred_dt = predict(dt, turnover_test)
+turnoverNorm$event <- as.factor(turnoverNorm$event)
+dt <- C5.0(event ~., data = turnoverNorm)
+pred_dt = predict(dt, turnoverNorm)
 
-CrossTable(x = test_labels, y = turnover_test_copy$pred_dt, prop.chisq = FALSE)
-confusionMatrix(as.factor(test_labels), as.factor(turnover_test_copy$pred_dt), positive = "1")
+CrossTable(x = labels, y = pred_dt, prop.chisq = FALSE)
+confusionMatrix(as.factor(labels), as.factor(pred_dt), positive = "1")
 ```
 
 
@@ -147,16 +135,16 @@ library(caret)
 library(gmodels)
 
 #choose k to be sqrt of the size
-kval = sqrt(nrow(turnover_train))
+kval = sqrt(nrow(turnoverNorm))
 
-turnover_test_copy$pred_knn = knn(train = turnover_train, test = turnover_test, cl = train_labels, k = kval)
+prob_knn = knn(train = turnoverNorm_no_event, test = turnoverNorm_no_event, cl = test_labels, k = kval)
 
 #convert output from binary factor to numeric
-turnover_test_copy$pred_knn = ifelse(turnover_test_copy$pred_knn == "1", 1, 0)
+pred_knn = ifelse(prob_knn == "1", 1, 0)
 
 #evaluate
-CrossTable(x = test_labels, y = turnover_test_copy$pred_knn, prop.chisq = FALSE)
-confusionMatrix(as.factor(test_labels), as.factor(turnover_test_copy$pred_knn), positive = "1")
+CrossTable(x = labels, y = pred_knn, prop.chisq = FALSE)
+confusionMatrix(as.factor(labels), as.factor(pred_knn), positive = "1")
 ```
 The KNN model predicted 134 individuals would leave, of which 87 actually left. It missed 87 who were predicted to stay but actually left. The sensitivity is 57.6% and the specificity is 64.9%.
 
@@ -167,14 +155,16 @@ library(class)
 library(caret)
 library(gmodels)
 
-ANN_model = neuralnet(event ~ ., data = turnover_train_withEvent, stepmax = 1e+05) #set low for now for testing
-ANN_results = compute(ANN_model, turnover_test_withEvent)
-turnover_test_copy$pred_ann = ANN_results$net.result
-turnover_test_copy$pred_ann = ifelse(turnover_test_copy$pred_ann >= 0.5, 1, 0)
+ANN_model = neuralnet(event ~ ., data = turnoverNorm, stepmax = 1e+05) #set low for now for testing
+ANN_results = compute(ANN_model, turnoverNorm)
+prob_ann = ANN_results$net.result
+pred_ann = ifelse(prob_ann >= 0.5, 1, 0)
+
+pred_ann = pred_ann[,2]
 
 #evaluate
-CrossTable(x = test_labels, y = turnover_test_copy$pred_ann, prop.chisq = FALSE)
-confusionMatrix(as.factor(test_labels), as.factor(turnover_test_copy$pred_ann), positive = "1")
+CrossTable(x = labels, y = pred_ann, prop.chisq = FALSE)
+confusionMatrix(as.factor(labels), as.factor(pred_ann), positive = "1")
 ```
 <<<<<<< HEAD
 The ANN model predicted 76 individuals would leave, of which 57 actually left. It missed 117 who were predicted to stay but actually left. The sensitivity is 55.5% and the specificity is 75.0%.
@@ -186,26 +176,48 @@ The ANN model predicted 76 individuals would leave, of which 57 actually left. I
 
 ```{r}
 library(kernlab)
-svm_model <- ksvm(event ~ ., data = turnover_train_withEvent, kernel = "vanilladot")
-turnover_test_copy$pred_SVM <- predict(svm_model, turnover_test)
+svm_model <- ksvm(event ~ ., data = turnoverNorm, kernel = "vanilladot")
+pred_SVM <- predict(svm_model, turnoverNorm)
 
-CrossTable(x = test_labels, y = turnover_test_copy$pred_SVM, prop.chisq = FALSE)
-confusionMatrix(as.factor(test_labels), as.factor(turnover_test_copy$pred_SVM), positive = "1")
+CrossTable(x = labels, y = pred_SVM, prop.chisq = FALSE)
+confusionMatrix(as.factor(labels), as.factor(pred_SVM), positive = "1")
 ```
 
 
 ### Stacked Model
+
+We now need to create separate testing and training datasets for the stacked model.
+
 ```{r}
+set.seed(414)
+training_indices = sample(1:nrow(turnoverNorm), 0.7*(nrow(turnoverNorm)))
+
 # building a decision tree on the five models we produced
-combine_df <- data.frame(turnover_test_withEvent$event, turnover_test_copy$pred_glm, turnover_test_copy$pred_knn, turnover_test_copy$pred_ann, turnover_test_copy$pred_dt, turnover_test_copy$pred_SVM)
+combine_df <- data.frame(turnoverNorm$event, pred_glm, pred_knn, pred_ann, pred_dt, pred_SVM)
 
 combine_df
 
-#evaluate
-CrossTable(x = test_labels, y = turnover_test_copy$pred_overall, prop.chisq = FALSE)
+combine_train = combine_df[training_indices, ]
+combine_test = combine_df[-training_indices, ]
+#turnover_train_withEvent = turnover_train
+#turnover_test_withEvent = turnover_test
+#turnover_train$event = NULL
+#turnover_test$event = NULL
+#train_labels = turnoverNorm[training_indices, "event"]
 ```
-<<<<<<< HEAD
-The combined model predicted 124 individuals would leave, of which 88 actually left. It missed 86 who were predicted to stay but actually left. The sensitivity is 60.0% and the specificity is 71.0%.
+
+We now run a decision tree on the combined dataframe.
+```{r}
+combine_train$turnoverNorm.event <- as.factor(combine_train$turnoverNorm.event)
+dt <- C5.0(turnoverNorm.event ~., data = combine_train)
+pred_stacked = predict(dt, combine_test)
+
+test_labels <- combine_test$turnoverNorm.event
+
+CrossTable(x = test_labels, y = pred_stacked, prop.chisq = FALSE)
+confusionMatrix(as.factor(test_labels), as.factor(pred_stacked), positive = "1")
+```
+
 =======
 The combined model predicted 124 individuals would leave, of which 88 actually left. It missed 86 who were predicted to stay but actually left. The sensitivity is 60% and the specificity is 71%.
 
