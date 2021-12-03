@@ -142,18 +142,5 @@ CrossTable(x = test_labels, y = turnover_test_copy$pred_ann, prop.chisq = FALSE)
 ```
 The ANN model predicted 76 individuals would leave, of which 57 actually left. It missed 117 who were predicted to stay but actually left. The sensitivity is 55.5% and the specificity is 75%.
 
-### Weighted Combined Model
-```{r}
-# an arbitrary 40% weight for ANN and 30% weight for the other 2
-turnover_test_copy$pred_sum = (0.4*(turnover_test_copy$pred_ann)) + (0.3*(turnover_test_copy$pred_glm)) + (0.3*(turnover_test_copy$pred_knn))
-turnover_test_copy$pred_overall = ifelse(turnover_test_copy$pred_sum >= 0.5, 1, 0)
-
-#evaluate
-CrossTable(x = test_labels, y = turnover_test_copy$pred_overall, prop.chisq = FALSE)
-```
-The combined model predicted 124 individuals would leave, of which 88 actually left. It missed 86 who were predicted to stay but actually left. The sensitivity is 60% and the specificity is 71%.
 
 
-### Based on models above, are you on track to acheiving your objectives. Are the models helpful on your decision making? How do you need to improve the models?
-
-Of the three models we ran, GLM is currently the highest. This may be due to the ANN being limited in layers (we did this so it would knit faster temporarily), and the KNN not having an optimal k value. GOing forward, we want to find the optimal k-value for KNN and identify the relevant significant variables for GLM. Finally, we will increase the depth of the ANN model so that it returns more accurate results.
