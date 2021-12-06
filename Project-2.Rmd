@@ -82,7 +82,11 @@ library(gmodels)
 
 #make the model, remove insignificant elements
 logit_model = glm(event ~ . , data = turnoverNorm, family = binomial)
+<<<<<<< HEAD
 logit_model = step(logit_model, direction = "backward")
+=======
+logit_model = step(logit_model, direction = "backward", trace = 0)
+>>>>>>> 2b92b006d056ac2798c1cedef3abb2c49bff3fd6
 summary(logit_model)
 
 #create new vector for prediction
@@ -97,6 +101,7 @@ confusionMatrix(as.factor(labels), as.factor(pred_glm), positive = "1")
 The GLM model predicted 562 individuals would leave, of which 370 actually left. It missed 192 who were predicted to stay but actually left. The sensitivity is 65.84% and the specificity is 64.55%. For the model overall, the accuracy was 65.19%.
 
 After running our logistic regression model using the step function to determine statistically significant predictors, we ended up keeping the following variables:
+<<<<<<< HEAD
 - Stag (Experience measured in time)\
 - Age\
 - Industry\
@@ -105,6 +110,16 @@ After running our logistic regression model using the step function to determine
 - Coach (How much training the employee received)\
 - Way (How employees travel to work: By foot, bus or car)\
 - Independent (Amount of task independence)\
+=======
+- Stag (Experience measured in time)
+- Age
+- Industry
+- Profession
+- Traffic (How the employee got recruited into the company)
+- Coach (How much training the employee received)
+- Way (How employees travel to work: By foot, bus or car)
+- Independent (Amount of task independence)
+>>>>>>> 2b92b006d056ac2798c1cedef3abb2c49bff3fd6
 
 Some of the factors that the model eliminated were surprising because we expected gender (insignificant in the final model) and wage to be significant. Logically, mothers and workers earning low wages have more reason to leave the company or workforce in general but that was not reflected in this model.
 
@@ -131,7 +146,11 @@ The decision tree model predicted 568 individuals would leave, of which 516 actu
 
 According to the summary of our decision tree, we found that the industryIT factor seems to be the most important factor in determining employee turnover, followed by industryBuilding, trafficreferal, trafficfriends, and wayfoot. The least important factors were trafficempjs, industryMining, and trafficrabrecNErab. It was pretty interesting for us to see that different types of industries and traffic methods dominate the most and least important factors in predicting turnovers. Meanwhile, individual traits such as age, gender, and personality appear to play as less important roles in affecting turnovers according to our model. 
 
+<<<<<<< HEAD
 Combining the results from GLM and decision tree, the two dominating factor that stand out in predicting turnovers are industry and traffic. This conclusion is quite intriguing because it does not align with our intuition of turnovers being determined by more individualistic factors such as personality or happiness. Also, businesses cannot really change what industry they are in, and have limited control in how employees get to employment (traffic). According to these analyses, we raised another question in our mind: Are turnovers less controllable and preventable than we might have assumed? 
+=======
+Combining the results from GLM and decision tree, the two dominating factor that stand out in predicting turnovers are industry and traffic. This conclusion is quite intriguing because it does not align with our intuition of turnovers being determined by more individualistic factors such as personality or happiness. Also, businesses cannot really change what industry they are in, and have limited control in how employees get to work (traffic). According to these analyses, we raised another question in our mind: Are turnovers less controllable and preventable than we might have assumed? 
+>>>>>>> 2b92b006d056ac2798c1cedef3abb2c49bff3fd6
 
 ## K Nearest Neighbors Analysis
 ```{r}
