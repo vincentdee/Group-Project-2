@@ -242,7 +242,7 @@ The stacked model predicted 175 individuals would leave, of which 159 actually l
 
 According to the summary, the stacked model only used the decision tree model, meaning the decision tree model outperformed all the other models in our analysis. Since we split the data into test and train datasets, the initial concern of overfitting might be mitigated. This leads to an answer for the second part of our business problem, which is that decision tree is most effective in predicting employee turnover given our data. 
 
-#Conclusion
+# Conclusion
 
 To conclude, we were able to achieve our goals of 
   (1) identifying contributory factors in employee turnover, and 

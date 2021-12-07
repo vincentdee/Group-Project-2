@@ -1412,7 +1412,7 @@ div.tocify {
 ## C5.0.formula(formula = turnoverNorm.event ~ ., data = combine_train)
 ## 
 ## 
-## C5.0 [Release 2.07 GPL Edition]      Tue Dec 07 16:53:03 2021
+## C5.0 [Release 2.07 GPL Edition]      Tue Dec 07 16:57:47 2021
 ## -------------------------------
 ## 
 ## Class specified by attribute `outcome&#39;
@@ -1448,11 +1448,13 @@ div.tocify {
 ## Time: 0.0 secs</code></pre>
 <p>The stacked model predicted 175 individuals would leave, of which 159 actually left. It missed 16 who were predicted to stay but actually left. The sensitivity is 90.86% and the specificity is 90.85%. Overall, our stacked model reported an accuracy measure of 90.86%.</p>
 <p>According to the summary, the stacked model only used the decision tree model, meaning the decision tree model outperformed all the other models in our analysis. Since we split the data into test and train datasets, the initial concern of overfitting might be mitigated. This leads to an answer for the second part of our business problem, which is that decision tree is most effective in predicting employee turnover given our data.</p>
-<p>#Conclusion</p>
+</div>
+</div>
+<div id="conclusion" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Conclusion</h1>
 <p>To conclude, we were able to achieve our goals of (1) identifying contributory factors in employee turnover, and (2) determining the most accurate models.</p>
 <p>The most important factors are industry and traffic, and the most useful model is decision tree (or stacked model which was solely based off decision tree). From our results, IT, building, and banking industries have the highest effect on turnovers. There is a lowest possibility of turnover in IT industry, and highest possibilities in building and banking. For future decision making, industries that are in industries of high turnovers might find it helpful to compare themselves with industries with low turnovers and further analyze the differences.</p>
 <p>An overall improvement in the industry might be more useful than navigating through individualistic factors in terms of preventing turnovers.</p>
-</div>
 </div>
 
 
