@@ -75,7 +75,7 @@ labels <- turnoverNorm$event
 The following are a series of baseline models:
 
 ## Logistic Regression Analysis
-```{r}
+```{r, cache=TRUE}
 library(class)
 library(caret)
 library(gmodels)
@@ -114,7 +114,7 @@ The confusion matrix shows that the model was only had an accuracy of 65%, with 
 
 ## Decision Tree
 
-```{r}
+```{r, cache=TRUE}
 library(C50)
 turnoverNorm$event <- as.factor(turnoverNorm$event)
 dt <- C5.0(event ~., data = turnoverNorm)
@@ -134,7 +134,7 @@ According to the summary of our decision tree, we found that the industryIT fact
 Combining the results from GLM and decision tree, the two dominating factor that stand out in predicting turnovers are industry and traffic. This conclusion is quite intriguing because it does not align with our intuition of turnovers being determined by more individualistic factors such as personality or happiness. Also, businesses cannot really change what industry they are in, and have limited control in how employees get to employment (traffic). According to these analyses, we raised another question in our mind: Are turnovers less controllable and preventable than we might have assumed? 
 
 ## K Nearest Neighbors Analysis
-```{r}
+```{r, cache=TRUE}
 library(class)
 library(caret)
 library(gmodels)
@@ -155,7 +155,7 @@ confusionMatrix(as.factor(labels), as.factor(pred_knn), positive = "1")
 The KNN model predicted 514 individuals would leave, of which 340 actually left. It missed 174 who were predicted to stay but actually left. The sensitivity is 66.15% and the specificity is 62.44%. Overall, our KNN model reported 64.13% accuracy.
 
 ## Artificial Neural Network Analysis
-```{r}
+```{r, cache=TRUE}
 library(neuralnet)
 library(class)
 library(caret)
@@ -178,8 +178,22 @@ The ANN model predicted 693 individuals would leave, of which 486 actually left.
 ## SVM Analysis
 
 ```{r}
+library(neuralnet)
+library(class)
+library(caret)
+library(gmodels)
 library(kernlab)
-svm_model <- ksvm(event ~ ., data = turnoverNorm, kernel = "vanilladot")
+svm_model <- ksvm(event ~ ., data = turnoverNorm, kernel = "rbfdot")
+#Accuracies:
+#rbfdot: 0.7733
+#polydot: 0.6652
+#laplacedot: 0.6873
+#anovadot: 0.6926
+#besseldot: 0.5527
+#tanhdot: 0.4198
+#splinedot: 0.7343
+#vanilladot: 0.667
+
 pred_SVM <- predict(svm_model, turnoverNorm)
 
 CrossTable(x = labels, y = pred_SVM, prop.chisq = FALSE)
@@ -207,6 +221,12 @@ combine_test = combine_df[-training_indices, ]
 
 We now run a decision tree on the combined dataframe.
 ```{r}
+library(neuralnet)
+library(class)
+library(caret)
+library(gmodels)
+library(C50)
+
 combine_train$turnoverNorm.event <- as.factor(combine_train$turnoverNorm.event)
 dt <- C5.0(turnoverNorm.event ~., data = combine_train)
 pred_stacked = predict(dt, combine_test)
