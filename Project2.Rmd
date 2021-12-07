@@ -244,8 +244,8 @@ According to the summary, the stacked model only used the decision tree model, m
 
 # Conclusion
 
-To conclude, we were able to achieve our goals of 
-  (1) identifying contributory factors in employee turnover, and 
+To conclude, we were able to achieve our goals of \
+  (1) identifying contributory factors in employee turnover, and \
   (2) determining the most accurate models. 
 
 The most important factors are industry and traffic, and the most useful model is decision tree (or stacked model which was solely based off decision tree). From our results, IT, building, and banking industries have the highest effect on turnovers. There is a lowest possibility of turnover in IT industry, and highest possibilities in building and banking. For future decision making, industries that are in industries of high turnovers might find it helpful to compare themselves with industries with low turnovers and further analyze the differences. 
