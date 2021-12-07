@@ -200,7 +200,7 @@ CrossTable(x = labels, y = pred_SVM, prop.chisq = FALSE)
 confusionMatrix(as.factor(labels), as.factor(pred_SVM), positive = "1")
 ```
 
-Our SVM model predicted 529 individuals would leave, of which 362 actually left. It missed 167 who were predicted to stay but actually left. The sensitivity is 68.43% and the specificity is 65.17%. Overall, our SVM model was 66.7% accurate.
+Our SVM model predicted 529 individuals would leave, of which 362 actually left. It missed 167 who were predicted to stay but actually left. The sensitivity is 77.49% and the specificity is 77.16%. Overall, our SVM model was 77.33% accurate.
 
 ## Stacked Model
 
